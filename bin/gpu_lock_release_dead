@@ -1,0 +1,19 @@
+#!/bin/env python
+
+from __future__ import print_function
+
+import os
+import sys
+import subprocess
+import atexit
+
+from gpu_lock import gpu_lock
+from gpu_lock import util
+
+if __name__ == "__main__":
+    for gpu in gpu_lock.enumerate_gpus():
+        if gpu.is_owned and gpu.is_mine:
+            if not util.process_exists(gpu.owning_process):
+                gpu.release()
+                print("Released gpu{}".format(gpu.gpu_id))
+

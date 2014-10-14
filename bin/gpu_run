@@ -1,0 +1,26 @@
+#!/bin/env python
+
+from __future__ import print_function
+
+import os
+import sys
+import subprocess
+import atexit
+
+from gpu_lock import gpu_lock
+
+if __name__ == "__main__":
+    with gpu_lock.GpuManager() as gpu_manager:
+
+        env = dict(os.environ)
+        env['CUDA_VISIBLE_DEVICES'] = str(gpu_manager.gpu.gpu_id)
+
+        worker = subprocess.Popen(sys.argv[1:], env=env)
+
+        def _terminate_worker():
+            if worker.poll() is None:
+                worker.kill()
+        atexit.register(_terminate_worker)
+
+        worker.wait()
+
