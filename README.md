@@ -28,9 +28,20 @@ If all else fails, go muck about in `/var/lock/gpu/`, but be careful :)
 
 # Installation
 
-Run `python setup.py install` to install.
+Install with pip
 
-Create `/var/lock/gpu` and make sure it is writeable by everyone who will be locking gpus.
+```
+pip install git+https://github.com/mdenil/gpu_lock
+```
+
+so you can uninstall later with `pip uninstall gpu_lock` or clone the repo and run `python setup.py install`.
+
+Create `/var/lock/gpu` and make sure it is writeable by everyone who will be locking gpus (you need to be root to do this).
+
+```
+sudo mkdir /var/lock/gpu
+sudo chmod a+w /var/lock/gpu
+```
 
 Create a file `/etc/profile.d/gpu_lock.sh` with the following line:
 
@@ -38,5 +49,5 @@ Create a file `/etc/profile.d/gpu_lock.sh` with the following line:
 export CUDA_VISIBLE_DEVICES=""
 ```
 
-(or add it to `/etc/bashrc`).  Nothing will stop malicious people from undoing this, this tool relies on everyone cooperating.
+(or add it to `/etc/bashrc`).  This will stop people from accidentally running on an unlocked gpu.  Nothing will stop a malicious person from working around this.
 
