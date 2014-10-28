@@ -46,8 +46,15 @@ sudo chmod a+w /var/lock/gpu
 Create a file `/etc/profile.d/gpu_lock.sh` with the following line:
 
 ```
-export CUDA_VISIBLE_DEVICES=""
+CUDA_VISIBLE_DEVICES=""
+export CUDA_VISIBLE_DEVICES
 ```
 
 (or add it to `/etc/bashrc`).  This will stop people from accidentally running on an unlocked gpu.  Nothing will stop a malicious person from working around this.
+
+You may also want to create `/etc/profile.d/gpu_lock.csh` with
+
+```
+setenv CUDA_VISIBLE_DEVICES=""
+```
 
