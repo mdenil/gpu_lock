@@ -20,7 +20,13 @@ if __name__ == "__main__":
         worker_pgid = os.getpgid(worker.pid)
 
         def _terminate_worker():
-            os.killpg(worker_pgid, signal.SIGKILL)
+            try:
+                os.killpg(worker_pgid, signal.SIGKILL)
+            except OSError:
+                # If the worker and all subprocesses have already exited then
+                # the signal fails.  Really all we want is for them to stop so
+                # that's okay.
+                pass
         atexit.register(_terminate_worker)
 
         worker.wait()
