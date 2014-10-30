@@ -22,7 +22,7 @@ def print_info_table():
     for gpu in gpu_lock.enumerate_gpus():
         gpu_info_string = "|{}    {}    {} {}".format(
             stringify(gpu.gpu_id).rjust(4),
-            stringify(gpu.owning_process).ljust(6),
+            stringify(gpu.owning_process).rjust(6),
             stringify(gpu.owner_name).ljust(8),
             util.gpu_run_process_info(gpu.owning_process))
 
