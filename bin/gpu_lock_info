@@ -11,16 +11,19 @@ import atexit
 from gpu_lock import gpu_lock
 from gpu_lock import util
 
+def stringify(x):
+    return "" if x is None else str(x)
+
 def print_info_table():
     print("| Compute processes:                                                          |")
     print("|  GPU      PID      User        Process Name                                 |")
     print("|=============================================================================|")
 
     for gpu in gpu_lock.enumerate_gpus():
-        gpu_info_string = "|{: 4}    {: 6}    {} {}".format(
-            gpu.gpu_id,
-            gpu.owning_process,
-            gpu.owner_name.ljust(8),
+        gpu_info_string = "|{}    {}    {} {}".format(
+            stringify(gpu.gpu_id).rjust(4),
+            stringify(gpu.owning_process).ljust(6),
+            stringify(gpu.owner_name).ljust(8),
             util.gpu_run_process_info(gpu.owning_process))
 
         gpu_info_string = gpu_info_string[:77].ljust(78) + "|"
