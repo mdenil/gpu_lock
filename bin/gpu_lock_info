@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 import os
+import re
 import sys
 import subprocess
 import atexit
@@ -10,19 +11,33 @@ import atexit
 from gpu_lock import gpu_lock
 from gpu_lock import util
 
+def print_info_table():
+    print("| Compute processes:                                                          |")
+    print("|  GPU      PID      User        Process Name                                 |")
+    print("|=============================================================================|")
 
-def print_lock_info(gpu):
-    print("gpu_id: {}".format(gpu.gpu_id))
-    print("owner: {}".format(gpu.owner_name))
+    for gpu in gpu_lock.enumerate_gpus():
+        gpu_info_string = "|{: 4}    {: 6}    {} {}".format(
+            gpu.gpu_id,
+            gpu.owning_process,
+            gpu.owner_name.ljust(8),
+            util.gpu_run_process_info(gpu.owning_process))
 
-    if gpu.is_owned and not util.process_exists(gpu.owning_process):
-        print("process: {} (DEAD)".format(gpu.owning_process))
-    else:
-        print("process: {}".format(gpu.owning_process))
+        gpu_info_string = gpu_info_string[:77].ljust(78) + "|"
 
+        print(gpu_info_string)
 
 if __name__ == "__main__":
-    for gpu in gpu_lock.enumerate_gpus():
-        print_lock_info(gpu)
-        print("----------")
+    out = subprocess.check_output("nvidia-smi").split("\n")
+    replace = False
+    for line in out:
+        if line.startswith("| Compute processes:"):
+            replace = True
+
+        if replace and line.startswith("+-----"):
+            print_info_table()
+            replace = False
+
+        if not replace:
+            print(line)
 

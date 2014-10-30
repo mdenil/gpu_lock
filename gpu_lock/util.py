@@ -16,3 +16,23 @@ def process_exists(pid):
 
     return True
 
+def gpu_run_process_info(pid):
+    """
+    Returns the name of a running program launched with gpu_run.
+
+    This is accomplished by reading the cmd line that gpu_run was invoked with
+    and dropping the first two elements.  We drop the first two because they
+    should always be "python" and "gpu_run".
+    """
+
+    if not pid:
+        return ""
+
+    with open("/proc/{}/cmdline".format(pid)) as cmdline_file:
+        cmdline = cmdline_file.read().split('\0')
+
+    # ignore any path prefixing the command
+    cmdline[2] = os.path.basename(cmdline[2])
+
+    return " ".join(cmdline[2:])
+        
